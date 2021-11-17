@@ -1,5 +1,8 @@
 from mrjob.job import MRJob
 from mrjob.step import MRStep
+import re
+
+WORD_REGEX = re.compile(r"([a-zA-Z]+[-'][a-zA-Z]+)|([a-zA-z]+)")
 
 class MaxFrequencyWord(MRJob):
 
@@ -10,8 +13,8 @@ class MaxFrequencyWord(MRJob):
         ]
 
     def mapper_step1(self, _, line):
-        for word in line.split():
-            yield(word.lower(), 1)
+        for word in WORD_REGEX.findall(line):
+            yield(word[1].lower(), 1)
 
     def reducer_step1(self, word, count):
         yield(word, sum(count))
